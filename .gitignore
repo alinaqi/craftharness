@@ -21,3 +21,6 @@ build/
 *.egg-info/
 
 .DS_Store
+
+# per-run test scoresheets
+docs/test-results-*.md
