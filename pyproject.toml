@@ -1,0 +1,65 @@
+[build-system]
+requires = ["hatchling>=1.25"]
+build-backend = "hatchling.build"
+
+[project]
+name = "craftharness"
+version = "0.1.0"
+description = "An open-source harness for knowledge work — skills + a data gateway (uDAPI) + finder-not-validator quality controls. maggy's sibling for non-code tasks."
+readme = "README.md"
+requires-python = ">=3.12"
+license = "Apache-2.0"
+license-files = ["LICENSE"]
+keywords = ["agent", "skills", "mcp", "research", "provenance", "claude", "harness"]
+authors = [{ name = "Ali Naqi Shaheen" }]
+
+# Zero hard runtime dependencies: the harness runs BYO-keys against the host's
+# own tools (Claude Code WebSearch / WebFetch / Bash), and validate_claims.py is
+# stdlib-only. Optional provider adapters declare their own extras below.
+dependencies = []
+
+classifiers = [
+  "Development Status :: 3 - Alpha",
+  "License :: OSI Approved :: Apache Software License",
+  "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: 3.13",
+  "Intended Audience :: Developers",
+  "Topic :: Scientific/Engineering :: Artificial Intelligence",
+]
+
+[project.urls]
+Homepage = "https://github.com/alinaqi/craftharness"
+Repository = "https://github.com/alinaqi/craftharness"
+Issues = "https://github.com/alinaqi/craftharness/issues"
+
+[project.optional-dependencies]
+# The conduit data gateway and its adapters (e.g. dataforseo) live behind an
+# extra so the core install stays dependency-free.
+conduit = ["httpx>=0.27"]
+dev = ["ruff>=0.8", "mypy>=1.13", "pytest>=8.0", "pytest-cov>=5.0"]
+
+# A console entry point is intentionally left out until the `craftharness` CLI
+# (init / sync / --demo) lands (SPEC.md §D). When it does, add:
+#   [project.scripts]
+#   craftharness = "conduit.cli:main"
+
+[tool.hatch.build.targets.wheel]
+# Ship the importable Python package plus the harness assets consumers install
+# via install.sh. harness/ is data, not a package, so include it explicitly.
+packages = ["conduit"]
+force-include = { "harness" = "craftharness/harness" }
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "N", "W", "UP"]
+
+[tool.mypy]
+python_version = "3.12"
+strict = true
+
+[tool.pytest.ini_options]
+testpaths = ["conduit", "tests"]
+addopts = "--cov=conduit --cov-report=term-missing --cov-fail-under=80"
