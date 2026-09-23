@@ -17,6 +17,31 @@ isn't code. A harness is the deliberate design of three things around any seriou
 Open-core: the **harness is free OSS** (works BYO-keys); a hosted data plane, **uDAPI**,
 gives it superpowers out of the box. Runs on **Claude Code, claude.ai, ChatGPT, and Codex**.
 
+## What a harness is, concretely (a harness is NOT just a skill)
+
+A **skill** is one *component* of a harness — the instructions/method leg. A **harness** is
+the assembled apparatus. Each leg of the definition needs a different mechanism:
+
+| Harness leg | Delivered by |
+|-------------|--------------|
+| **1. Workflow** — steps, branching, retries | **Skill(s)** — `research-spine` + a deliverable skill; for complex/autonomous harnesses, also **orchestration code** (plugin / CLI) that runs steps deterministically |
+| **2. Context & tools** | **uDAPI (an MCP server) + adapters**, plus local tools (Bash, files). The skill *declares* what to use; the fetching is the MCP server, not skill text |
+| **3. Quality controls** | **Hooks** (the only real *enforcement* — a skill can only suggest) **+ `validate_claims.py`** (validator) **+ finder ≠ validator orchestration** |
+
+```
+harness  =  skill(s)        # the brain / method (workflow + context declaration)
+          + tools/data      # uDAPI MCP server + adapters
+          + quality hooks   # enforcement (PreToolUse/Stop) + validator
+          + [plugin / CLI]  # orchestration, for multi-step or scheduled/autonomous ones
+          + [memory/state]  # for recurring or long-running harnesses
+```
+
+If a harness were *only* a skill it couldn't fetch data, couldn't enforce quality (skills
+can't block — only hooks can), and couldn't run unattended. **Packaging per surface:** on
+Claude Code / Codex a harness ships as a **plugin** bundling skills + hooks + the uDAPI MCP
+config; on claude.ai / ChatGPT (no hooks) it's **skill(s) + the uDAPI connector**, with the
+quality checks running as an in-harness validator step instead of a hook.
+
 ## The two artifacts that span every surface (the key research finding)
 
 All four target surfaces converged on the **same two open standards**, so craftharness is
