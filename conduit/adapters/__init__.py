@@ -9,15 +9,18 @@ capability to a list of adapter classes.
 from __future__ import annotations
 
 from .dataforseo import DataForSeoAdapter
+from .apify import ApifyAdapter
 
 # capability -> list of adapter classes serving it
 REGISTRY: dict[str, list[type]] = {
     "keywords": [DataForSeoAdapter],
+    "crawl": [ApifyAdapter],
 }
 
 # provider (str) -> adapter class, for direct lookup by name
 ADAPTERS: dict[str, type] = {
     DataForSeoAdapter.provider: DataForSeoAdapter,
+    ApifyAdapter.provider: ApifyAdapter,
 }
 
-__all__ = ["ADAPTERS", "REGISTRY", "DataForSeoAdapter"]
+__all__ = ["ADAPTERS", "REGISTRY", "DataForSeoAdapter", "ApifyAdapter"]
